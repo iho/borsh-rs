@@ -74,7 +74,6 @@ pub fn borsh_deserialize(input: TokenStream) -> TokenStream {
                     use_discriminant = false;
                 }
             }
-            println!("use_discriminant: {}", use_discriminant);
         }
     }
 
@@ -122,8 +121,7 @@ pub fn borsh_schema(input: TokenStream) -> TokenStream {
 
 #[proc_macro_attribute]
 pub fn borsh(args: TokenStream, input: TokenStream) -> TokenStream {
-    let tokens = args.clone();
-    let attribute_args: syn::AttributeArgs = syn::parse_macro_input!(tokens);
+    let attribute_args: syn::AttributeArgs = syn::parse_macro_input!(args);
 
     let attr = MacroAttribute::from_attribute_args(
         "use_discriminant",
@@ -136,11 +134,9 @@ pub fn borsh(args: TokenStream, input: TokenStream) -> TokenStream {
     let name_values_attributes = attr.into_name_values().unwrap();
 
     for (name, value) in &name_values_attributes {
-        if name == "use_discriminant" {
-            if value.to_string() == "true" {
-                use_discriminant = true;
-                found = true;
-            }
+        if name == "use_discriminant" && value.to_string() == "true" {
+            use_discriminant = true;
+            found = true;
         }
         // println!("{:7} => {}", name, value);
     }
@@ -148,11 +144,10 @@ pub fn borsh(args: TokenStream, input: TokenStream) -> TokenStream {
     if found {
         let attr: Attribute = parse_quote!(#[use_discriminant = #use_discriminant]);
 
-        let input = parse_macro_input!(input as DeriveInput);
-        let mut new_item = input.clone();
-        new_item.attrs.push(attr);
+        let mut input = parse_macro_input!(input as DeriveInput);
+        input.attrs.push(attr);
 
-        let expanded = quote! { #new_item };
+        let expanded = quote! { #input };
         TokenStream::from(expanded)
     } else {
         input
