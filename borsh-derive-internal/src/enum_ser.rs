@@ -6,7 +6,11 @@ use syn::{Fields, Ident, ItemEnum, WhereClause};
 
 use crate::{attribute_helpers::contains_skip, enum_discriminant_map::discriminant_map};
 
-pub fn enum_ser(input: &ItemEnum, cratename: Ident) -> syn::Result<TokenStream2> {
+pub fn enum_ser(
+    input: &ItemEnum,
+    cratename: Ident,
+    use_discriminant: bool,
+) -> syn::Result<TokenStream2> {
     let name = &input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     let mut where_clause = where_clause.map_or_else(
@@ -19,7 +23,8 @@ pub fn enum_ser(input: &ItemEnum, cratename: Ident) -> syn::Result<TokenStream2>
     let mut variant_idx_body = TokenStream2::new();
     let mut fields_body = TokenStream2::new();
     let discriminants = discriminant_map(&input.variants);
-    for variant in input.variants.iter() {
+    for (variant_idx, variant) in input.variants.iter().enumerate() {
+        let variant_idx = u8::try_from(variant_idx).expect("up to 256 enum variants are supported");
         let variant_ident = &variant.ident;
         let mut variant_header = TokenStream2::new();
         let mut variant_body = TokenStream2::new();
@@ -46,9 +51,15 @@ pub fn enum_ser(input: &ItemEnum, cratename: Ident) -> syn::Result<TokenStream2>
                     })
                 }
                 variant_header = quote! { { #variant_header }};
-                variant_idx_body.extend(quote!(
-                    #name::#variant_ident { .. } => #discriminant_value,
-                ));
+                if use_discriminant {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #discriminant_value,
+                    ));
+                } else {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #variant_idx,
+                    ));
+                }
             }
             Fields::Unnamed(fields) => {
                 for (field_idx, field) in fields.unnamed.iter().enumerate() {
@@ -77,14 +88,26 @@ pub fn enum_ser(input: &ItemEnum, cratename: Ident) -> syn::Result<TokenStream2>
                     }
                 }
                 variant_header = quote! { ( #variant_header )};
-                variant_idx_body.extend(quote!(
-                    #name::#variant_ident(..) => #discriminant_value,
-                ));
+                if use_discriminant {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #discriminant_value,
+                    ));
+                } else {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #variant_idx,
+                    ));
+                }
             }
             Fields::Unit => {
-                variant_idx_body.extend(quote!(
-                    #name::#variant_ident => #discriminant_value,
-                ));
+                if use_discriminant {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #discriminant_value,
+                    ));
+                } else {
+                    variant_idx_body.extend(quote!(
+                        #name::#variant_ident { .. } => #variant_idx,
+                    ));
+                }
             }
         }
         fields_body.extend(quote!(

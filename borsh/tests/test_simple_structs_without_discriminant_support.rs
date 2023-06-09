@@ -1,9 +1,7 @@
 use borsh::maybestd::collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque};
 use borsh::{from_slice, BorshDeserialize, BorshSerialize};
-use borsh_derive::borsh;
 use bytes::{Bytes, BytesMut};
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
 #[borsh_init(init)]
 struct A<'a> {
@@ -41,7 +39,6 @@ impl A<'_> {
     }
 }
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
 struct B {
     x: u64,
@@ -49,7 +46,6 @@ struct B {
     c: C,
 }
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
 enum C {
     C1,
@@ -77,39 +73,6 @@ struct F1<'a, 'b> {
 #[derive(BorshDeserialize)]
 struct F2<'b> {
     aa: Vec<A<'b>>,
-}
-
-#[borsh(use_discriminant = true)]
-#[derive(BorshSerialize, BorshDeserialize, PartialEq, Eq, Clone, Copy, Debug)]
-enum X {
-    A,
-    B = 20,
-    C,
-    D,
-    E = 10,
-    F,
-}
-
-#[test]
-fn test_discriminant_serialization() {
-    let values = vec![X::A, X::B, X::C, X::D, X::E, X::F];
-    for value in values {
-        assert_eq!(value.try_to_vec().unwrap(), [value as u8]);
-    }
-}
-
-#[test]
-fn test_discriminant_deserialization() {
-    let values = vec![X::A, X::B, X::C, X::D, X::E, X::F];
-    for value in values {
-        assert_eq!(from_slice::<X>(&[value as u8]).unwrap(), value,);
-    }
-}
-
-#[test]
-#[should_panic = "Unexpected variant tag: 2"]
-fn test_deserialize_invalid_discriminant() {
-    from_slice::<X>(&[2]).unwrap();
 }
 
 #[test]
