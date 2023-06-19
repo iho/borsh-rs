@@ -16,9 +16,11 @@ Binary Object Representation Serializer for Hashing
 proc-macro = true
 
 [dependencies]
-borsh-derive-internal = { path = "../borsh-derive-internal", version = "0.11.0" }
-borsh-schema-derive-internal = { path = "../borsh-schema-derive-internal", version = "0.11.0" }
 syn = { version = "2", features = ["full", "fold"] }
 proc-macro-crate = "1"
 proc-macro2 = "1"
 quote = "1"
+
+
+[dev-dependencies]
+pretty_assertions = "1.1.0"
