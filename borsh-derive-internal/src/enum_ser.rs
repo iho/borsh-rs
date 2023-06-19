@@ -22,12 +22,11 @@ pub fn enum_ser(
     );
     let mut variant_idx_body = TokenStream2::new();
     let mut fields_body = TokenStream2::new();
-    let discriminants = discriminant_map(&input.variants);
-    let has_explicit_discriminants = discriminants.iter().any(|variant| variant.1.is_empty());
+    let (discriminants, has_explicit_discriminants) = discriminant_map(&input.variants);
     if has_explicit_discriminants && use_discriminant.is_none() {
         return Err(syn::Error::new(
-            Span::call_site(),
-            "You have to specify `#[borsh(use_discriminant=true)]` or `#[borsh(use_discriminant=false)]` for all structs that have enum with explicit discriminant",
+            input.ident.span(),
+            "You have to specify `#[use_discriminant=true]` or `#[use_discriminant=false]` for all structs that have enum with explicit discriminant",
         ));
     }
 
