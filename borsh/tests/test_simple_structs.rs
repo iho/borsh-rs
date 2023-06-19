@@ -1,6 +1,6 @@
 use borsh::maybestd::collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque};
 use borsh::{from_slice, BorshDeserialize, BorshSerialize};
-use borsh_derive::borsh;
+// use borsh_derive::borsh;
 use bytes::{Bytes, BytesMut};
 
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
@@ -76,8 +76,8 @@ struct F2<'b> {
     aa: Vec<A<'b>>,
 }
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Eq, Clone, Copy, Debug)]
+#[use_discriminant = true]
 enum X {
     A,
     B = 20,

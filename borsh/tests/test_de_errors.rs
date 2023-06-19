@@ -1,22 +1,22 @@
 use borsh::{from_slice, BorshDeserialize};
-use borsh_derive::borsh;
+// use borsh_derive::borsh;
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshDeserialize, Debug)]
+#[use_discriminant = true]
 enum A {
     X,
     Y,
 }
 
-#[borsh(use_discriminant = false)]
 #[derive(BorshDeserialize, Debug)]
+#[use_discriminant = false]
 enum AOld {
     X,
     Y,
 }
 
-#[borsh(use_discriminant = true)]
 #[derive(BorshDeserialize, Debug)]
+#[use_discriminant = true]
 struct B {
     #[allow(unused)]
     x: u64,
