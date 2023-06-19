@@ -1,8 +1,7 @@
+#![recursion_limit = "128"]
 // TODO: re-enable this lint when we bump msrv to 1.58
 #![allow(clippy::uninlined_format_args)]
 extern crate proc_macro;
-use borsh_derive_internal::*;
-use borsh_schema_derive_internal::*;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use proc_macro_crate::crate_name;
@@ -11,6 +10,29 @@ use quote::ToTokens;
 use syn::{
     parse_macro_input, DeriveInput, Ident, ItemEnum, ItemStruct, ItemUnion, Meta, MetaNameValue,
 };
+
+mod helpers;
+
+mod attribute_helpers;
+mod enum_de;
+mod enum_discriminant_map;
+mod enum_schema;
+mod enum_ser;
+mod struct_de;
+mod struct_schema;
+mod struct_ser;
+mod union_de;
+mod union_ser;
+
+use enum_de::enum_de;
+use enum_ser::enum_ser;
+use struct_de::struct_de;
+use struct_ser::struct_ser;
+use union_de::union_de;
+use union_ser::union_ser;
+
+use enum_schema::process_enum;
+use struct_schema::process_struct;
 
 #[proc_macro_derive(BorshSerialize, attributes(borsh_skip, use_discriminant))]
 pub fn borsh_serialize(input: TokenStream) -> TokenStream {
