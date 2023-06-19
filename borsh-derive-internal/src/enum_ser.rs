@@ -32,7 +32,6 @@ pub fn enum_ser(
     }
 
     let use_discriminant = use_discriminant.unwrap_or(false);
-    dbg!(use_discriminant);
     for (variant_idx, variant) in input.variants.iter().enumerate() {
         let variant_idx = u8::try_from(variant_idx).expect("up to 256 enum variants are supported");
         let variant_ident = &variant.ident;

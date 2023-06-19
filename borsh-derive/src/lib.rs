@@ -7,12 +7,9 @@ use proc_macro::TokenStream;
 use proc_macro2::Span;
 use proc_macro_crate::crate_name;
 use proc_macro_crate::FoundCrate;
-use quote::quote;
 use quote::ToTokens;
-use syn::Attribute;
 use syn::{
-    parse_macro_input, parse_quote, DeriveInput, Ident, ItemEnum, ItemStruct, ItemUnion, Meta,
-    MetaNameValue,
+    parse_macro_input, DeriveInput, Ident, ItemEnum, ItemStruct, ItemUnion, Meta, MetaNameValue,
 };
 
 #[proc_macro_derive(BorshSerialize, attributes(borsh_skip, use_discriminant))]
@@ -40,7 +37,6 @@ pub fn borsh_serialize(input: TokenStream) -> TokenStream {
                     } => {
                         if path.is_ident("use_discriminant") {
                             let value = value.to_token_stream().to_string();
-                            dbg!(&value);
                             use_discriminant = match value.as_str() {
                                 "true" => Some(true),
                                 "false" => Some(false),
@@ -58,8 +54,6 @@ pub fn borsh_serialize(input: TokenStream) -> TokenStream {
             }
         }
     }
-
-    dbg!(use_discriminant);
 
     let res = if let Ok(input) = syn::parse::<ItemStruct>(input.clone()) {
         struct_ser(&input, cratename)
@@ -102,7 +96,6 @@ pub fn borsh_deserialize(input: TokenStream) -> TokenStream {
                     } => {
                         if path.is_ident("use_discriminant") {
                             let value = value.to_token_stream().to_string();
-                            dbg!(&value);
                             use_discriminant = match value.as_str() {
                                 "true" => Some(true),
                                 "false" => Some(false),
@@ -120,8 +113,6 @@ pub fn borsh_deserialize(input: TokenStream) -> TokenStream {
             }
         }
     }
-
-    dbg!(use_discriminant);
 
     let res = if let Ok(input) = syn::parse::<ItemStruct>(input.clone()) {
         struct_de(&input, cratename)
@@ -166,39 +157,3 @@ pub fn borsh_schema(input: TokenStream) -> TokenStream {
         Err(err) => err.to_compile_error(),
     })
 }
-
-// #[proc_macro_attribute]
-// pub fn borsh(args: TokenStream, input: TokenStream) -> TokenStream {
-//     let mut iter = args.into_iter();
-
-//     let mut use_discriminant = false;
-//     let mut found = false;
-//     let attr = iter.next().unwrap();
-//     if attr.to_string() == "use_discriminant" {
-//         iter.next().unwrap(); // =
-//         let attr = iter.next().unwrap();
-//         let value = attr.to_string();
-//         dbg!(attr.to_string());
-//         if value == "true" {
-//             use_discriminant = true;
-//             found = true;
-//         } else if value == "false" {
-//             use_discriminant = false;
-//             found = true;
-//         }
-//     }
-
-//     dbg!(use_discriminant);
-//     dbg!(found);
-//     if found {
-//         let attr: Attribute = parse_quote!(#[use_discriminant = #use_discriminant]);
-
-//         let mut input = parse_macro_input!(input as DeriveInput);
-//         input.attrs.push(attr);
-
-//         let expanded = quote! { #input };
-//         TokenStream::from(expanded)
-//     } else {
-//         input
-//     }
-// }
