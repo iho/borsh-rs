@@ -3,7 +3,7 @@ use borsh::{from_slice, BorshDeserialize, BorshSerialize};
 use bytes::{Bytes, BytesMut};
 
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
-#[borsh_init(init)]
+#[borsh(init=init_func)]
 struct A<'a> {
     x: u64,
     b: B,
@@ -27,12 +27,12 @@ struct A<'a> {
     c: std::borrow::Cow<'a, str>,
     cow_arr: std::borrow::Cow<'a, [std::borrow::Cow<'a, str>]>,
     range_u32: std::ops::Range<u32>,
-    #[borsh_skip]
+    #[borsh(skip)]
     skipped: Option<u64>,
 }
 
 impl A<'_> {
-    pub fn init(&mut self) {
+    pub fn init_func(&mut self) {
         if let Some(v) = self.lazy.as_mut() {
             *v *= 10;
         }

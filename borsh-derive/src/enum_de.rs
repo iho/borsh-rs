@@ -23,6 +23,7 @@ pub fn enum_de(
         Clone::clone,
     );
     let init_method = contains_initialize_with(&input.attrs);
+    dbg!(&init_method);
     let mut variant_arms = TokenStream2::new();
 
     let (discriminants, has_explicit_discriminants) = discriminant_map(&input.variants);

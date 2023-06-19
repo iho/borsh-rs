@@ -7,9 +7,7 @@ use proc_macro2::Span;
 use proc_macro_crate::crate_name;
 use proc_macro_crate::FoundCrate;
 use quote::ToTokens;
-use syn::{
-    parse_macro_input, DeriveInput, Ident, ItemEnum, ItemStruct, ItemUnion, Meta, MetaNameValue,
-};
+use syn::{parse_macro_input, DeriveInput, Ident, ItemEnum, ItemStruct, ItemUnion, Meta};
 
 mod helpers;
 
@@ -51,24 +49,17 @@ pub fn borsh_serialize(input: TokenStream) -> TokenStream {
     for attr in &derive_input.attrs {
         if attr.path().is_ident("use_discriminant") {
             if let Meta::NameValue(value) = attr.meta.clone() {
-                let MetaNameValue {
-                    path,
-                    eq_token: _,
-                    value,
-                } = value;
-                if path.is_ident("use_discriminant") {
-                    let value = value.to_token_stream().to_string();
-                    use_discriminant = match value.as_str() {
-                        "true" => Some(true),
-                        "false" => Some(false),
-                        _ => {
-                            return TokenStream::from(
-                                syn::Error::new(Span::call_site(), "`use_discriminant` ")
-                                    .to_compile_error(),
-                            );
-                        }
-                    };
-                }
+                let value = value.value.to_token_stream().to_string();
+                use_discriminant = match value.as_str() {
+                    "true" => Some(true),
+                    "false" => Some(false),
+                    _ => {
+                        return TokenStream::from(
+                            syn::Error::new(Span::call_site(), "`use_discriminant` ")
+                                .to_compile_error(),
+                        );
+                    }
+                };
             }
         }
     }
@@ -89,7 +80,7 @@ pub fn borsh_serialize(input: TokenStream) -> TokenStream {
     })
 }
 
-#[proc_macro_derive(BorshDeserialize, attributes(borsh_skip, borsh_init, use_discriminant))]
+#[proc_macro_derive(BorshDeserialize, attributes(borsh, use_discriminant))]
 pub fn borsh_deserialize(input: TokenStream) -> TokenStream {
     let name = &crate_name("borsh").unwrap();
     let name = match name {
@@ -106,24 +97,17 @@ pub fn borsh_deserialize(input: TokenStream) -> TokenStream {
     for attr in &derive_input.attrs {
         if attr.path().is_ident("use_discriminant") {
             if let Meta::NameValue(value) = attr.meta.clone() {
-                let MetaNameValue {
-                    path,
-                    eq_token: _,
-                    value,
-                } = value;
-                if path.is_ident("use_discriminant") {
-                    let value = value.to_token_stream().to_string();
-                    use_discriminant = match value.as_str() {
-                        "true" => Some(true),
-                        "false" => Some(false),
-                        _ => {
-                            return TokenStream::from(
-                                syn::Error::new(Span::call_site(), "`use_discriminant` ")
-                                    .to_compile_error(),
-                            );
-                        }
-                    };
-                }
+                let value = value.value.to_token_stream().to_string();
+                use_discriminant = match value.as_str() {
+                    "true" => Some(true),
+                    "false" => Some(false),
+                    _ => {
+                        return TokenStream::from(
+                            syn::Error::new(Span::call_site(), "`use_discriminant` ")
+                                .to_compile_error(),
+                        );
+                    }
+                };
             }
         }
     }

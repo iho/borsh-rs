@@ -289,21 +289,21 @@ mod tests {
                     >
                 ) {
                     #[derive(borsh :: BorshSchema)]
-                    struct ABacon<C, W>(#[borsh_skip] ::core::marker::PhantomData<(C, W, )>);
+                    struct ABacon<C, W>(#[borsh(skip)] ::core::marker::PhantomData<(C, W, )>);
                     #[derive(borsh :: BorshSchema)]
-                    struct AEggs<C, W>(#[borsh_skip] ::core::marker::PhantomData<(C, W, )>);
+                    struct AEggs<C, W>(#[borsh(skip)] ::core::marker::PhantomData<(C, W, )>);
                     #[derive(borsh :: BorshSchema)]
                     struct ASalad<C, W>(
                         Tomatoes,
                         C,
                         Oil,
-                        #[borsh_skip] ::core::marker::PhantomData<(C, W, )>
+                        #[borsh(skip)] ::core::marker::PhantomData<(C, W, )>
                     );
                     #[derive(borsh :: BorshSchema)]
                     struct ASausage<C, W> {
                         wrapper: W,
                         filling: Filling,
-                        #[borsh_skip]
+                        #[borsh(skip)]
                         borsh_schema_phantom_data: ::core::marker::PhantomData<(C, W, )>
                     }
                     <ABacon<C, W> as borsh::BorshSchema>::add_definitions_recursively(definitions);

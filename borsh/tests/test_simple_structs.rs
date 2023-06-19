@@ -3,7 +3,7 @@ use borsh::{from_slice, BorshDeserialize, BorshSerialize};
 use bytes::{Bytes, BytesMut};
 
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Debug)]
-#[borsh_init(init)]
+#[borsh(init=init_func)]
 struct A<'a> {
     x: u64,
     b: B,
@@ -32,7 +32,7 @@ struct A<'a> {
 }
 
 impl A<'_> {
-    pub fn init(&mut self) {
+    pub fn init_func(&mut self) {
         if let Some(v) = self.lazy.as_mut() {
             *v *= 10;
         }

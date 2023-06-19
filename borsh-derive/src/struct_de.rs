@@ -15,6 +15,7 @@ pub fn struct_de(input: &ItemStruct, cratename: Ident) -> syn::Result<TokenStrea
         Clone::clone,
     );
     let init_method = contains_initialize_with(&input.attrs);
+    dbg!(&init_method);
     let return_value = match &input.fields {
         Fields::Named(fields) => {
             let mut body = TokenStream2::new();

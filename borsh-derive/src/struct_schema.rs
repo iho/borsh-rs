@@ -395,7 +395,7 @@ mod tests {
     #[test]
     fn tuple_struct_whole_skip() {
         let item_struct: ItemStruct = syn::parse2(quote!{
-            struct A(#[borsh_skip] String);
+            struct A(#[borsh(skip)] String);
         })
         .unwrap();
 
